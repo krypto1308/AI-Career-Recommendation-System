@@ -1,101 +1,83 @@
-# ==================================
-# AI Career Recommendation Dashboard
-# ==================================
-
 import streamlit as st
 import requests
 
-# -------------------------------
-# Page Config
-# -------------------------------
+# -----------------------------
+# Page setup
+# -----------------------------
 st.set_page_config(
-    page_title="AI Career Recommendation System",
+    page_title="AI Career Recommendation",
     page_icon="🎯",
     layout="centered"
 )
 
-# -------------------------------
-# Title Section
-# -------------------------------
 st.title("🎯 AI Career Recommendation System")
-st.write(
-    "Get personalized career role recommendations based on your skills "
-    "and job market intelligence."
-)
+st.write("Enter your skills and get career recommendations.")
 
 st.divider()
 
-# -------------------------------
-# User Input Section
-# -------------------------------
-st.subheader("🧍 Your Profile")
-
-experience = st.selectbox(
+# -----------------------------
+# User input
+# -----------------------------
+experience_level = st.selectbox(
     "Select your experience level",
     ["Fresher", "Mid-Level", "Senior"]
 )
 
-skills_input = st.text_input(
+skills_text = st.text_input(
     "Enter your skills (comma separated)",
     placeholder="python, sql, pandas"
 )
 
-# -------------------------------
-# Button Action
-# -------------------------------
-if st.button("🚀 Get Career Recommendations"):
-    if not skills_input.strip():
-        st.warning("⚠️ Please enter at least one skill.")
+# -----------------------------
+# Backend API (LOCAL)
+# -----------------------------
+API_URL = "http://127.0.0.1:8000/recommend"
+
+st.caption(f"Connected to backend: {API_URL}")
+
+# -----------------------------
+# Button action
+# -----------------------------
+if st.button("🚀 Get Recommendations"):
+    if skills_text.strip() == "":
+        st.warning("Please enter at least one skill.")
     else:
-        user_skills = [s.strip().lower() for s in skills_input.split(",")]
+        skills = [s.strip().lower() for s in skills_text.split(",")]
 
         payload = {
-            "skills": user_skills,
-            "experience_level": experience
+            "skills": skills,
+            "experience_level": experience_level
         }
 
         try:
-            response = requests.post(
-                API_URL = "https://ai-career-backend.onrender.com/recommend",
-                json=payload,
-                timeout=30
-            )
+            response = requests.post(API_URL, json=payload)
 
             if response.status_code == 200:
                 data = response.json()
                 recommendations = data["recommendations"]
 
-                st.success("✅ AI Recommendations Ready!")
+                st.success("Recommendations generated!")
                 st.divider()
 
-                # -------------------------------
-                # Display Results
-                # -------------------------------
-                for idx, rec in enumerate(recommendations, 1):
-                    with st.container():
-                        st.subheader(f"🏆 Recommendation {idx}: {rec['role']}")
+                for i, rec in enumerate(recommendations, start=1):
+                    st.subheader(f"🏆 Recommendation {i}: {rec['role']}")
 
-                        st.write("**Skill Match Percentage**")
-                        st.progress(min(int(rec["match_percentage"]), 100))
+                    st.write("**Skill Match Percentage**")
+                    st.progress(min(int(rec["match_percentage"]), 100))
 
-                        st.metric(
-                            label="AI Confidence Score",
-                            value=rec["ai_score"]
-                        )
+                    st.metric("AI Confidence Score", rec["ai_score"])
 
-                        if rec["missing_skills"]:
-                            st.write("**Skills to Learn:**")
-                            st.write(", ".join(rec["missing_skills"]))
-                        else:
-                            st.write("🎉 You already have all required skills!")
+                    if rec["missing_skills"]:
+                        st.write("**Skills to Learn:**")
+                        st.write(", ".join(rec["missing_skills"]))
+                    else:
+                        st.write("🎉 You already match this role well!")
 
-                        st.divider()
-
+                    st.divider()
             else:
-                st.error("❌ Failed to get recommendations from AI server.")
+                st.error(f"Backend error: {response.status_code}")
+                st.write(response.text)
 
         except Exception as e:
-            st.error("⚠️ Could not connect to AI backend.")
-            st.write(str(e))
-
-
+            st.error("Could not connect to backend")
+            st.write(e)
