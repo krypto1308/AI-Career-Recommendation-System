@@ -56,7 +56,7 @@ if st.button("🚀 Get Career Recommendations"):
 
         try:
             response = requests.post(
-                "http://127.0.0.1:8000/recommend",
+                API_URL = "https://ai-career-backend.onrender.com/recommend",
                 json=payload
             )
 
@@ -96,3 +96,4 @@ if st.button("🚀 Get Career Recommendations"):
         except Exception as e:
             st.error("⚠️ Could not connect to AI backend.")
             st.write(str(e))
+
