@@ -31,7 +31,7 @@ skills_text = st.text_input(
 # -----------------------------
 # Backend API (LOCAL)
 # -----------------------------
-API_URL = "https://ai-career-recommendation-api.onrender.com/recommend"
+API_URL = "https://ai-career-recommendation-system-ektq.onrender.com/recommend"
 
 st.caption(f"Connected to backend: {API_URL}")
 
