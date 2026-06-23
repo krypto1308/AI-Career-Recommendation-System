@@ -26,19 +26,10 @@ def root():
 # --------------------
 @app.post("/recommend")
 def recommend(user: UserProfile):
+    recommendations = recommend_roles(user.skills)
+
     return {
-        "recommendations": [
-            {
-                "role": "Data Analyst",
-                "match_percentage": 78,
-                "missing_skills": ["excel", "power bi"],
-                "ai_score": 85
-            },
-            {
-                "role": "Data Scientist",
-                "match_percentage": 65,
-                "missing_skills": ["machine learning", "statistics"],
-                "ai_score": 80
-            }
-        ]
+        "input_skills": user.skills,
+        "experience_level": user.experience_level,
+        "recommendations": recommendations
     }
