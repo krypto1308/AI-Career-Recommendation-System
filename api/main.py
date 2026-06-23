@@ -29,7 +29,18 @@ def recommend(user: UserProfile):
     recommendations = recommend_roles(user.skills)
 
     return {
-        "input_skills": user.skills,
-        "experience_level": user.experience_level,
-        "recommendations": recommendations
-    }
+    "recommendations": [
+        {
+            "role": "Data Analyst",
+            "match_percentage": 90,
+            "ai_score": 85,
+            "missing_skills": ["excel", "power bi"]
+        },
+        {
+            "role": "Data Scientist",
+            "match_percentage": 80,
+            "ai_score": 80,
+            "missing_skills": ["machine learning", "statistics"]
+        }
+    ]
+}
